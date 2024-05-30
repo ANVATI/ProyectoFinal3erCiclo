@@ -1766,10 +1766,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5c1ef5308211d2469b21dd6402cce10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  walkSpeed: 5
   runSpeed: 8
-  cameraTransform: {fileID: 330585546}
+  crouchSpeed: 3
   rollForce: 10
+  cameraTransform: {fileID: 330585546}
 --- !u!1 &1686251314
 GameObject:
   m_ObjectHideFlags: 0
@@ -2230,10 +2231,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5c1ef5308211d2469b21dd6402cce10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 4
+  walkSpeed: 5
   runSpeed: 20
-  cameraTransform: {fileID: 330585546}
+  crouchSpeed: 3
   rollForce: 10
+  cameraTransform: {fileID: 330585546}
 --- !u!4 &1937314028
 Transform:
   m_ObjectHideFlags: 0

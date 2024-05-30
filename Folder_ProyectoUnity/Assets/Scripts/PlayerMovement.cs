@@ -4,242 +4,198 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 5.0f;
-    public float runSpeed = 6.5f;
-    public Transform cameraTransform;
-    private Vector2 _movement;
-    private Rigidbody rb;
-    private Animator playerAnimation;
+    [Header("Atributos del jugador")]
+
+    public float walkSpeed = 5.0f;
+    public float runSpeed = 10f;
+    public float crouchSpeed = 3.0f;
     public float rollForce = 10f;
+    public Transform cameraTransform;
+
+    private Vector2 movementInput;
+    private Rigidbody rb;
+    private Animator animator;
     private CapsuleCollider capsuleCollider;
     private Vector3 standingColliderCenter;
     private float standingColliderHeight;
 
-    //La pandemia de booleanos
-    private bool isRunning = false;
-    private bool runButtonPressed = false;
-    private bool IsNormalAttacking = false;
-    private bool IsCrouched = false;
-    private bool canRolling = false;
-    private bool IsRolling = false;
-    private bool CanAttackStand = true;
-    private bool rollButtonEnabled = true;
-    private bool rageModeButton = true;
-    private bool inRageMode = false;
-    private bool CanAttackCrouch = true;
-    private bool IsCrouchAttacking = false;
-    private bool CanTaunt = true;
-    private bool inTaunt = false;
+    private PlayerState playerState;
+    private bool canAttack = true;
+
+    private enum PlayerState
+    {
+        Idle,
+        Walking,
+        Running,
+        Crouching,
+        Rolling,
+        Attacking,
+        CrouchingAttack,
+        Taunting,
+        Rage
+    }
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        playerAnimation = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
         capsuleCollider = GetComponent<CapsuleCollider>();
         standingColliderCenter = capsuleCollider.center;
         standingColliderHeight = capsuleCollider.height;
-    }
-    void FixedUpdate()
-    {
-        PlayerMovement();
-        CheckMovement();
+        playerState = PlayerState.Idle;
     }
 
-    private void Update()
+    void FixedUpdate()
     {
-        AnimationLogic();
+        HandleMovement();
+        UpdateAnimation();
     }
+
     public void OnMove(InputAction.CallbackContext context)
     {
-        _movement = context.ReadValue<Vector2>();
+        movementInput = context.ReadValue<Vector2>();
     }
 
     public void OnRunning(InputAction.CallbackContext context)
     {
-        if (!IsNormalAttacking && !IsCrouched && !IsRolling) 
+        if (playerState != PlayerState.Crouching)
         {
-            if (context.started)
+            if (context.started && (movementInput.x != 0 || movementInput.y != 0))
             {
-                runButtonPressed = true;
-                canRolling = true;
+                playerState = PlayerState.Running;
             }
             else if (context.canceled)
             {
-                speed = 10.0f;
-                isRunning = false;
-                runButtonPressed = false;
+                playerState = PlayerState.Walking;
             }
         }
     }
 
     public void OnRolling(InputAction.CallbackContext context)
     {
-        if (isRunning && canRolling && rollButtonEnabled)
+        if (playerState != PlayerState.Crouching)
         {
-            if (context.started)
+            if (context.started && playerState == PlayerState.Running)
             {
-                StartCoroutine(Rolling());
+                StartCoroutine(Roll());
             }
         }
     }
     public void OnCrouched(InputAction.CallbackContext context)
     {
-        if (!IsNormalAttacking && !isRunning && !IsRolling && _movement == Vector2.zero)
+        if (context.started)
         {
-            if (context.started)
-            {
-                if (IsCrouched)
-                {
-                    if (!Physics.Raycast(transform.position + capsuleCollider.center + Vector3.up * (capsuleCollider.height / 2f), Vector3.up, 1f))
-                    {
-                        speed = 10;
-                        IsCrouched = false;
-                        playerAnimation.SetBool("IsCrouched", false);
-                        capsuleCollider.height = standingColliderHeight;
-                        capsuleCollider.center = standingColliderCenter;
-                        CanTaunt = true;
-                    }
-                }
-                else
-                {
-                    CanTaunt = false;
-                    rageModeButton = false;
-                    speed = 3;
-                    IsCrouched = true;
-                    playerAnimation.SetBool("IsCrouched", true);
-                    capsuleCollider.height = standingColliderHeight / 1.5f;
-                    capsuleCollider.center = new Vector3(capsuleCollider.center.x, capsuleCollider.center.y / 1.5f, capsuleCollider.center.z);
-                }
-            }
+            ToggleCrouch();
         }
     }
+
     public void OnAttackStand(InputAction.CallbackContext context)
     {
-        if (context.performed && CanAttackStand)
+        if (context.performed && canAttack)
         {
-            if (!IsCrouched && !isRunning)
+            if (playerState == PlayerState.Crouching)
             {
-                StartCoroutine(NormalAttack());
-            }
-        }
-    }
-    public void OnAttackCrouch(InputAction.CallbackContext context)
-    {
-        if (context.performed && CanAttackCrouch)
-        {
-            if (IsCrouched && !isRunning)
-            {
-
                 StartCoroutine(CrouchAttack());
+            }
+            else if (playerState != PlayerState.Crouching)
+            {
+                StartCoroutine(Attack());
             }
         }
     }
 
     public void RageMode(InputAction.CallbackContext context)
     {
-        if (context.performed && rageModeButton)
+        if (playerState != PlayerState.Crouching)
         {
-            StartCoroutine(Rage());
+            if (context.performed)
+            {
+                StartCoroutine(Rage());
+            }
         }
     }
+
 
     public void Taunt(InputAction.CallbackContext context)
     {
-        if (context.performed && CanTaunt && !inTaunt
-            && !IsCrouched && !IsCrouchAttacking && !isRunning &&
-            !IsNormalAttacking)
+        if (playerState != PlayerState.Crouching)
         {
-            StartCoroutine(Taunt());   
+            if (context.performed)
+            {
+                StartCoroutine(Taunt());
+            }
         }
     }
-    private IEnumerator CrouchAttack()
+    private IEnumerator Roll()
     {
-        IsCrouchAttacking = true;
-        playerAnimation.SetBool("AttackCrouch", true);
-
-        CanAttackCrouch = false;
-
-        yield return new WaitForSeconds(0.8f);
-        IsCrouchAttacking = false;
-        playerAnimation.SetBool("AttackCrouch", false);
-
-        yield return new WaitForSeconds(0.05f);
-
-        CanAttackCrouch = true;
-    }
-
-    private IEnumerator NormalAttack()
-    {
-        IsNormalAttacking = true;
-        playerAnimation.SetBool("IsAttacking", true);
-
-        CanAttackStand = false;
-
-        yield return new WaitForSeconds(0.95f);
-
-        IsNormalAttacking = false;
-        playerAnimation.SetBool("IsAttacking", false);
-
-        yield return new WaitForSeconds(0.05f);
-        CanAttackStand = true;
-    }
-    private IEnumerator Rage()
-    {
-        playerAnimation.SetBool("RageMode", true);
-        rageModeButton = false;
-        inRageMode = true;
-
-        yield return new WaitForSeconds(2.5f);
-
-        inRageMode = false;
-        playerAnimation.SetBool("RageMode", false);
-
-        yield return new WaitForSeconds(5f);
-        rageModeButton = true;
-
-    }
-    private IEnumerator Taunt()
-    {
-        playerAnimation.SetBool("Taunt", true);
-        CanTaunt = false;
-        inTaunt = true;
-
-        yield return new WaitForSeconds(2f);
-        inTaunt = false;
-        playerAnimation.SetBool("Taunt", false);
-
-        yield return new WaitForSeconds(5f);
-        CanTaunt = true;
-    }
-    private IEnumerator Rolling()
-    {
-        playerAnimation.SetBool("IsRolling", true);
-        IsRolling = true;
-        runButtonPressed = false;
-        rollButtonEnabled = false;
+        playerState = PlayerState.Rolling;
+        animator.SetBool("IsRolling", true);
         rb.AddForce(transform.forward * rollForce, ForceMode.Impulse);
 
         yield return new WaitForSeconds(1f);
 
-        playerAnimation.SetBool("IsRolling", false);
-        IsRolling = false;
-        playerAnimation.SetBool("IsRunning", true);
+        animator.SetBool("IsRolling", false);
+        playerState = movementInput != Vector2.zero ? PlayerState.Walking : PlayerState.Idle;
+    }
+
+    private IEnumerator Attack()
+    {
+        playerState = PlayerState.Attacking;
+        canAttack = false;
+        animator.SetBool("IsAttacking", true);
+
+        yield return new WaitForSeconds(0.95f);
+
+        animator.SetBool("IsAttacking", false);
+        playerState = movementInput != Vector2.zero ? PlayerState.Walking : PlayerState.Idle;
+        canAttack = true;
+    }
+
+    private IEnumerator CrouchAttack()
+    {
+        playerState = PlayerState.CrouchingAttack;
+        canAttack = false;
+        animator.SetBool("AttackCrouch", true);
 
         yield return new WaitForSeconds(0.8f);
 
-        rollButtonEnabled = true;
-
-        if (Keyboard.current.shiftKey.isPressed)
-        {
-            runButtonPressed = true;
-        }
+        animator.SetBool("AttackCrouch", false);
+        playerState = PlayerState.Crouching;
+        canAttack = true;
     }
-    private void PlayerMovement()
+
+
+    private IEnumerator Rage()
     {
-        if (IsNormalAttacking || inRageMode || IsCrouchAttacking || inTaunt)
+        playerState = PlayerState.Rage;
+        animator.SetBool("RageMode", true);
+
+        yield return new WaitForSeconds(2.5f);
+
+        animator.SetBool("RageMode", false);
+        playerState = movementInput != Vector2.zero ? PlayerState.Walking : PlayerState.Idle;
+    }
+
+    private IEnumerator Taunt()
+    {
+        playerState = PlayerState.Taunting;
+        animator.SetBool("Taunt", true);
+
+        yield return new WaitForSeconds(2f);
+
+        animator.SetBool("Taunt", false);
+        playerState = movementInput != Vector2.zero ? PlayerState.Walking : PlayerState.Idle;
+    }
+
+    private void HandleMovement()
+    {
+        if (playerState == PlayerState.Attacking || playerState == PlayerState.Rage
+            || playerState == PlayerState.Taunting || playerState == PlayerState.Rolling
+            || playerState == PlayerState.CrouchingAttack)
         {
             return;
         }
+
         Vector3 forward = cameraTransform.forward;
         Vector3 right = cameraTransform.right;
 
@@ -249,45 +205,56 @@ public class PlayerController : MonoBehaviour
         forward.Normalize();
         right.Normalize();
 
-        Vector3 moveDirection = forward * _movement.y + right * _movement.x;
+        Vector3 moveDirection = forward * movementInput.y + right * movementInput.x;
 
-        if (!IsRolling && moveDirection != Vector3.zero)
+        if (moveDirection != Vector3.zero)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), 0.18f);
 
-            rb.MovePosition(transform.position + moveDirection * speed * Time.fixedDeltaTime);
+            float currentSpeed = 0f;
+
+            if (playerState == PlayerState.Running)
+            {
+                currentSpeed = runSpeed;
+            }
+            else if (playerState == PlayerState.Crouching)
+            {
+                currentSpeed = crouchSpeed;
+            }
+            else
+            {
+                currentSpeed = walkSpeed;
+            }
+
+            rb.MovePosition(transform.position + moveDirection * currentSpeed * Time.fixedDeltaTime);
         }
     }
-    private void AnimationLogic()
+
+    private void UpdateAnimation()
     {
-        if (IsNormalAttacking)
+        animator.SetFloat("X", movementInput.x);
+        animator.SetFloat("Y", movementInput.y);
+        animator.SetBool("IsRunning", playerState == PlayerState.Running);
+    }
+
+    private void ToggleCrouch()
+    {
+        if (playerState == PlayerState.Crouching)
         {
-            playerAnimation.SetFloat("X", 0);
-            playerAnimation.SetFloat("Y", 0);
+            if (!Physics.Raycast(transform.position + capsuleCollider.center + Vector3.up * (capsuleCollider.height / 2f), Vector3.up, 1f))
+            {
+                playerState = PlayerState.Idle;
+                animator.SetBool("IsCrouched", false);
+                capsuleCollider.height = standingColliderHeight;
+                capsuleCollider.center = standingColliderCenter;
+            }
         }
         else
         {
-            playerAnimation.SetFloat("X", _movement.x);
-            playerAnimation.SetFloat("Y", _movement.y);
-        }
-        playerAnimation.SetBool("IsRunning", isRunning);
-    }
-    private void CheckMovement()
-    {
-        if (!IsNormalAttacking)
-        {
-            if (_movement != Vector2.zero && runButtonPressed)
-            {
-                speed = runSpeed;
-                isRunning = true;
-                playerAnimation.SetBool("IsAttacking", false);
-                playerAnimation.SetBool("IsRunning", true);
-            }
-            else if (_movement == Vector2.zero && isRunning)
-            {
-                playerAnimation.SetBool("IsAttacking", false);
-                isRunning = false;
-            }
+            playerState = PlayerState.Crouching;
+            animator.SetBool("IsCrouched", true);
+            capsuleCollider.height = standingColliderHeight / 1.5f;
+            capsuleCollider.center = new Vector3(capsuleCollider.center.x, capsuleCollider.center.y / 1.5f, capsuleCollider.center.z);
         }
     }
 }
