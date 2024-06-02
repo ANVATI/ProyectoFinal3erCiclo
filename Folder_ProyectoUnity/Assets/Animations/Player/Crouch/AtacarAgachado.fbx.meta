@@ -56,7 +56,23 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.3802281
+        functionName: ActivarColliders
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 65ff9b0f3cb065e40beee3ac8b862df9,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.4986377
+        functionName: DesactivarColliders
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 65ff9b0f3cb065e40beee3ac8b862df9,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
