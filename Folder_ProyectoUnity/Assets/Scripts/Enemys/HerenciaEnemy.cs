@@ -10,6 +10,7 @@ public class HerenciaEnemy : MonoBehaviour
     protected Rigidbody rb;
     protected Collider enemyCollider;
     public Transform playerTransform;
+    protected AudioSource _audio;
     protected bool isAlive = true;
     protected int currentHP; 
     protected int maxHP;
@@ -20,6 +21,7 @@ public class HerenciaEnemy : MonoBehaviour
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
         enemyCollider = GetComponent<Collider>();
+        _audio = GetComponent<AudioSource>();    
     }
 
     protected virtual void Update()

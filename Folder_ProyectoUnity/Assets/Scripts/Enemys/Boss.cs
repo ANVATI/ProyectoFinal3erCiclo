@@ -1,22 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class Boss : HerenciaEnemy
 {
     private Renderer enemyRenderer;
-    public GameObject Eyes;
+    public LibrarySounds BossSounds;
+    public AudioClip dieSound;
+    public VisualEffect VFX_die;
     private MaterialPropertyBlock mpb;
     private float dissolveAmount = 0f;
     private float dissolveSpeed = 1f;
+    private float timer;
 
-    private void Start()
+    protected void Start()
     {
         maxHP = 10;
         currentHP = maxHP;
         pushingForce = 20;
         enemyRenderer = GetComponentInChildren<Renderer>();
         mpb = new MaterialPropertyBlock();
+    }
+    protected override void Update()
+    {
+        if (timer >= 10)
+        {
+            _audio.PlayOneShot(BossSounds.clipSounds[Random.Range(5, 8)]);
+            timer = 0;
+        }
+
+        timer = timer + Time.deltaTime;
     }
 
     public void TakeDamage(int damage, Vector3 attackerPosition)
@@ -28,6 +42,7 @@ public class Boss : HerenciaEnemy
         }
         else
         {
+            _audio.PlayOneShot(BossSounds.clipSounds[Random.Range(0,4)]);
             Vector3 direction = (transform.position - attackerPosition).normalized;
             rb.AddForce(direction * pushingForce, ForceMode.Impulse);
         }
@@ -65,11 +80,12 @@ public class Boss : HerenciaEnemy
 
     IEnumerator DieBoss()
     {
+        _audio.PlayOneShot(dieSound);
         animator.SetTrigger("BossDie");
         enemyCollider.enabled = false;
-        Destroy(Eyes.gameObject);
         yield return new WaitForSeconds(1f);
-        yield return new WaitForSeconds(1f);
+        VFX_die.Play();
+        yield return new WaitForSeconds(3f);
         while (dissolveAmount < 1f)
         {
             dissolveAmount += Time.deltaTime * dissolveSpeed;

@@ -5,10 +5,15 @@ using UnityEngine;
 public class Weapons : MonoBehaviour
 {
     public BoxCollider[] armas;
+    private AudioSource _weaponsSource;
+    public AudioClip slashSound;
     public int Damage = 3;
-    void Start()
+    private void Awake()
     {
-        
+        _weaponsSource = GetComponents<AudioSource>()[0];
+    }
+    private void Start()
+    {
         DesactivarColliders();
     }
     public void ActivarColliders()
@@ -20,6 +25,7 @@ public class Weapons : MonoBehaviour
                 armas[i].enabled = true;
             }
         }
+        _weaponsSource.PlayOneShot(slashSound);
         Debug.Log("Se activo el arma");
 
     }

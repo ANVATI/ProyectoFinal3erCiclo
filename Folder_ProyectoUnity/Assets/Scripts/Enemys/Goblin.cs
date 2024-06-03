@@ -1,14 +1,27 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Goblin : HerenciaEnemy
 {
     private Renderer enemyRenderer;
+    public LibrarySounds goblinSounds;
     public GameObject Eyes;
-    private MaterialPropertyBlock mpb; //Lo uso para modificar el shader de un solo enemigo.
+    private MaterialPropertyBlock mpb;
     private float dissolveAmount = 0f;
     private float dissolveSpeed = 1f;
+    private float timer;
+
+
+    protected override void Update()
+    {
+        timer = timer + Time.deltaTime;
+
+        if (timer >= 8)
+        {
+            _audio.PlayOneShot(goblinSounds.clipSounds[3]);
+            timer = 0;
+        }
+    }
 
     private void Start()
     {
@@ -28,6 +41,7 @@ public class Goblin : HerenciaEnemy
         }
         else
         {
+            _audio.PlayOneShot(goblinSounds.clipSounds[0]);
             Vector3 direction = (transform.position - attackerPosition).normalized;
             rb.AddForce(direction * pushingForce, ForceMode.Impulse);
         }
@@ -36,6 +50,7 @@ public class Goblin : HerenciaEnemy
     public void Kill()
     {
         OnEnemyKilled?.Invoke();
+        _audio.PlayOneShot(goblinSounds.clipSounds[1]);
         StopCoroutine(IntHint());
         animator.SetBool("GoblinHit", false);
         StartCoroutine(DieGoblin());
@@ -68,8 +83,9 @@ public class Goblin : HerenciaEnemy
         animator.SetTrigger("GoblinDie");
         enemyCollider.enabled = false;
         Destroy(Eyes.gameObject);
-        yield return new WaitForSeconds(1f);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
+        _audio.PlayOneShot(goblinSounds.clipSounds[2]);
+        yield return new WaitForSeconds(0.75f);
         while (dissolveAmount < 1f)
         {
             dissolveAmount += Time.deltaTime * dissolveSpeed;

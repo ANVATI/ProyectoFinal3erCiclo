@@ -9,7 +9,10 @@ public class PlayerController : MonoBehaviour
     public Transform cameraTransform;
     public PlayerActions playerAction;
     public GameObject Trail;
-    
+    public AudioSource walkAudioSource;  // AudioSource para el sonido de caminar
+    public AudioSource _audioSource;
+    public LibrarySounds _actionSounds; 
+
     private Vector2 movementInput;
     private Rigidbody rb;
     private Animator animator;
@@ -59,6 +62,8 @@ public class PlayerController : MonoBehaviour
         standingColliderHeight = capsuleCollider.height;
         playerState = PlayerState.Idle;
         playerAction = GetComponent<PlayerActions>();
+        walkAudioSource = GetComponents<AudioSource>()[1]; // Asume que el primer AudioSource es para caminar
+        _audioSource = GetComponents<AudioSource>()[0];
     }
 
     private void Update()
@@ -70,6 +75,21 @@ public class PlayerController : MonoBehaviour
     {
         HandleMovement();
         UpdateAnimation();
+        AudioMovement();
+    }
+    public void AudioMovement()
+    {
+        if (movementInput.magnitude > 0)
+        {
+            if (!walkAudioSource.isPlaying)
+            {
+                walkAudioSource.Play();
+            }
+        }
+        else
+        {
+            walkAudioSource.Stop();
+        }
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -132,8 +152,9 @@ public class PlayerController : MonoBehaviour
         {
             if (context.performed)
             {
-                StartCoroutine(Rage());
+                _audioSource.PlayOneShot(_actionSounds.clipSounds[0]);
                 playerAction.TriggerRage();
+                StartCoroutine(Rage());
                 playerAttributes.Stamina = 100f;
             }
         }
@@ -153,6 +174,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator Roll()
     {
+        _audioSource.PlayOneShot(_actionSounds.clipSounds[Random.Range(1, 3)]);
         playerState = PlayerState.Rolling;
         isRolling = true;
         DecreaseStamina(5);
