@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     public Transform cameraTransform;
     public PlayerActions playerAction;
     public GameObject Trail;
-    public AudioSource walkAudioSource;  // AudioSource para el sonido de caminar
+    public AudioSource walkAudioSource; 
     public AudioSource _audioSource;
     public LibrarySounds _actionSounds; 
 
@@ -62,7 +62,7 @@ public class PlayerController : MonoBehaviour
         standingColliderHeight = capsuleCollider.height;
         playerState = PlayerState.Idle;
         playerAction = GetComponent<PlayerActions>();
-        walkAudioSource = GetComponents<AudioSource>()[1]; // Asume que el primer AudioSource es para caminar
+        walkAudioSource = GetComponents<AudioSource>()[1];
         _audioSource = GetComponents<AudioSource>()[0];
     }
 

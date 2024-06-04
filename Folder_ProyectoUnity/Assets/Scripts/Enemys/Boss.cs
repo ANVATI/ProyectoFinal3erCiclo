@@ -54,8 +54,6 @@ public class Boss : HerenciaEnemy
         StopCoroutine(IntHint());
         animator.SetBool("BossHit", false);
         StartCoroutine(DieBoss());
-        isAlive = false;
-        Debug.Log(isAlive);
     }
 
     private void OnTriggerEnter(Collider other)

@@ -54,8 +54,6 @@ public class Goblin : HerenciaEnemy
         StopCoroutine(IntHint());
         animator.SetBool("GoblinHit", false);
         StartCoroutine(DieGoblin());
-        isAlive = false;
-        Debug.Log(isAlive);
     }
 
     private void OnTriggerEnter(Collider other)

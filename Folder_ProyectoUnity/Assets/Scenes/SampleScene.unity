@@ -12811,7 +12811,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &460177883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26721,7 +26721,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &660874376
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -26750,8 +26750,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ExecuteInEditor: 1
-  m_Bindings:
-  - {fileID: 660874376}
+  m_Bindings: []
   m_VisualEffect: {fileID: 660874379}
 --- !u!73398921 &660874378
 VFXRenderer:
@@ -26761,7 +26760,7 @@ VFXRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 660874375}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -51463,56 +51462,6 @@ Transform:
   - {fileID: 1606627402}
   m_Father: {fileID: 1032944788}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1517934696
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1517934698}
-  - component: {fileID: 1517934697}
-  m_Layer: 0
-  m_Name: TestDialogos
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1517934697
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1517934696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 649968d183238ab40a5bb80f53485841, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dialogue: {fileID: 11400000, guid: 6153caa825d95a640bbc8e6edf967c96, type: 2}
-  characterNameText: {fileID: 1674446292}
-  dialogueText: {fileID: 341672877}
-  dialogueImage1: {fileID: 1018871571}
-  dialogueImage2: {fileID: 708975175}
-  dialoguePanel: {fileID: 460177882}
---- !u!4 &1517934698
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1517934696}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 357.42282, y: 225.52452, z: -4.9854712}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1520668134
 GameObject:
   m_ObjectHideFlags: 0
@@ -65053,6 +65002,12 @@ MonoBehaviour:
   playerAction: {fileID: 0}
   lifeBar: {fileID: 1765621226}
   RageBar: {fileID: 1323654443}
+  dialogue: {fileID: 11400000, guid: 6153caa825d95a640bbc8e6edf967c96, type: 2}
+  characterNameText: {fileID: 1674446292}
+  dialogueText: {fileID: 341672877}
+  dialogueImage1: {fileID: 1018871571}
+  dialogueImage2: {fileID: 708975175}
+  dialoguePanel: {fileID: 460177882}
 --- !u!1 &1983178964
 GameObject:
   m_ObjectHideFlags: 0
@@ -74390,7 +74345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0adc8e7ae9a30a4a81b4ce0f585612a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueManager: {fileID: 1517934697}
+  uiManager: {fileID: 0}
 --- !u!4 &5901452233726357824
 Transform:
   m_ObjectHideFlags: 0
@@ -77308,4 +77263,3 @@ SceneRoots:
   - {fileID: 543450651742838887}
   - {fileID: 660874380}
   - {fileID: 1898619741}
-  - {fileID: 1517934698}

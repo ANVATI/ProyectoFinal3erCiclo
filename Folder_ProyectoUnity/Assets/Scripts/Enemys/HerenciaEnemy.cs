@@ -11,7 +11,6 @@ public class HerenciaEnemy : MonoBehaviour
     protected Collider enemyCollider;
     public Transform playerTransform;
     protected AudioSource _audio;
-    protected bool isAlive = true;
     protected int currentHP; 
     protected int maxHP;
     protected int pushingForce;

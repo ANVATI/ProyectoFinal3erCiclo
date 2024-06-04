@@ -1,13 +1,13 @@
 using UnityEngine;
 public class ShowDialogue : MonoBehaviour
 {
-    public DialogueManager dialogueManager;
+    public UIManager uiManager;
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag  == "Player")
         {
-            dialogueManager.StartDialogue();
+            uiManager.StartDialogue();
         }
     }
 }
