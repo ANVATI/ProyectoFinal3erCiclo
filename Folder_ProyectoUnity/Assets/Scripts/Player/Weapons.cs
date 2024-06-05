@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Weapons : MonoBehaviour
 {
-    public BoxCollider[] armas;
+    public BoxCollider[] weapons;
+    public GameObject[] activateWeapons;
     private AudioSource _weaponsSource;
     public AudioClip slashSound;
     public int Damage = 3;
@@ -18,11 +19,11 @@ public class Weapons : MonoBehaviour
     }
     public void ActivarColliders()
     {
-        for (int i = 0; i < armas.Length; i++)
+        for (int i = 0; i < weapons.Length; i++)
         {
-            if (armas[i] != null)
+            if (weapons[i] != null)
             {
-                armas[i].enabled = true;
+                weapons[i].enabled = true;
             }
         }
         _weaponsSource.PlayOneShot(slashSound);
@@ -31,13 +32,21 @@ public class Weapons : MonoBehaviour
     }
     public void DesactivarColliders()
     {
-        for (int i = 0; i < armas.Length; i++)
+        for (int i = 0; i < weapons.Length; i++)
         {
-            if (armas[i] != null)
+            if (weapons[i] != null)
             {
-                armas[i].enabled = false;
+                weapons[i].enabled = false;
             }
         }
         Debug.Log("Se desactivo el arma");
+    }
+    public void ActivateWeapons(int index)
+    {
+        for (int i = 0; i < activateWeapons.Length; i++)
+        {
+            activateWeapons[i].SetActive(false);
+        }
+        activateWeapons[index].SetActive(true);
     }
 }

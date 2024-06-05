@@ -9,9 +9,9 @@ public class PlayerController : MonoBehaviour
     public Transform cameraTransform;
     public PlayerActions playerAction;
     public GameObject Trail;
-    public AudioSource walkAudioSource; 
+    public AudioSource walkAudioSource;
     public AudioSource _audioSource;
-    public LibrarySounds _actionSounds; 
+    public LibrarySounds _actionSounds;
 
     private Vector2 movementInput;
     private Rigidbody rb;
@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     private PlayerState playerState;
     private bool canAttack = true;
     private bool isRolling = false;
-    private bool isAttacking = false;
+    public bool isAttacking = false;
 
     private enum PlayerState
     {
@@ -276,7 +276,7 @@ public class PlayerController : MonoBehaviour
                 {
                     DecreaseStamina(0.1f);
                     playerAttributes.currentSpeed += playerAttributes.acceleration * Time.fixedDeltaTime;
-                    playerAttributes.currentSpeed = Mathf.Min(playerAttributes.currentSpeed, playerAttributes.maxSpeed); 
+                    playerAttributes.currentSpeed = Mathf.Min(playerAttributes.currentSpeed, playerAttributes.maxSpeed);
                 }
                 else if (playerAction.inRageMode)
                 {
