@@ -5,61 +5,38 @@ public class Inventory : MonoBehaviour
 {
     public GameObject[] armas;
     public Image[] imagenesArmas;
-    private ListaArmas listaArmas;
-    //private NodoArma nodoActual;
-    private int indiceActual = 0;
+    private bool[] armasDesbloqueadas;
+    private int indiceActual = 0; // Empezar con el primer arma equipada
     private PlayerController _player;
 
     private void Awake()
     {
-        _player = GetComponent<PlayerController>();
+        _player = FindObjectOfType<PlayerController>();
     }
 
     void Start()
     {
-        listaArmas = new ListaArmas(armas.Length);
-        for (int i = 0; i < armas.Length; i = i + 1 )
-        {
-            listaArmas.Agregar(armas[i], imagenesArmas[i]);
-        }
+        armasDesbloqueadas = new bool[armas.Length];
+        // La primera arma comienza desbloqueada
+        armasDesbloqueadas[0] = true;
         ActualizarInterfaz();
     }
 
-    void Update()
+    public void DesbloquearArma(int indiceArma)
     {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (indiceArma >= 0 && indiceArma < armas.Length)
         {
-            CambiarArmaAnterior();
-        }
-        else if (Input.GetKeyDown(KeyCode.E))
-        {
-            CambiarArmaSiguiente();
-        }
-    }
-
-    void CambiarArmaAnterior()
-    {
-        if (!_player.isAttacking)
-        {
-            indiceActual = (indiceActual - 1 + armas.Length) % armas.Length;
-            ActualizarInterfaz();
-        }
-    }
-
-    void CambiarArmaSiguiente()
-    {
-        if (!_player.isAttacking)
-        {
-            indiceActual = (indiceActual + 1) % armas.Length;
+            // Desbloquear el arma en el inventario
+            armasDesbloqueadas[indiceArma] = true;
             ActualizarInterfaz();
         }
     }
 
     void ActualizarInterfaz()
     {
-        if (!_player.isAttacking)
+        for (int i = 0; i < armas.Length; i++)
         {
-            for (int i = 0; i < imagenesArmas.Length; i = i + 1)
+            if (armasDesbloqueadas[i])
             {
                 if (i == indiceActual)
                 {
@@ -71,6 +48,59 @@ public class Inventory : MonoBehaviour
                     imagenesArmas[i].color = new Color(1f, 1f, 1f, 0.5f);
                     armas[i].SetActive(false);
                 }
+            }
+            else
+            {
+                imagenesArmas[i].color = new Color(1f, 1f, 1f, 0.5f);
+                armas[i].SetActive(false);
+            }
+        }
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Q) && _player.ChangeWeapon())
+        {
+            CambiarArmaAnterior();
+        }
+        else if (Input.GetKeyDown(KeyCode.E) && _player.ChangeWeapon())
+        {
+            CambiarArmaSiguiente();
+        }
+    }
+
+    void CambiarArmaAnterior()
+    {
+        if (!_player.isAttacking)
+        {
+            int nuevoIndice = indiceActual;
+            do
+            {
+                nuevoIndice = (nuevoIndice - 1 + armas.Length) % armas.Length;
+            } while (!armasDesbloqueadas[nuevoIndice] && nuevoIndice != indiceActual);
+
+            if (nuevoIndice != indiceActual)
+            {
+                indiceActual = nuevoIndice;
+                ActualizarInterfaz();
+            }
+        }
+    }
+
+    void CambiarArmaSiguiente()
+    {
+        if (!_player.isAttacking)
+        {
+            int nuevoIndice = indiceActual;
+            do
+            {
+                nuevoIndice = (nuevoIndice + 1) % armas.Length;
+            } while (!armasDesbloqueadas[nuevoIndice] && nuevoIndice != indiceActual);
+
+            if (nuevoIndice != indiceActual)
+            {
+                indiceActual = nuevoIndice;
+                ActualizarInterfaz();
             }
         }
     }

@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour
         Attacking,
         CrouchingAttack,
         Taunting,
+        Unequip,
         Rage
     }
 
@@ -99,7 +100,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnRunning(InputAction.CallbackContext context)
     {
-        if (playerState != PlayerState.Crouching && playerState != PlayerState.Attacking && !isAttacking)
+        if (playerState != PlayerState.Crouching && playerState != PlayerState.Attacking && playerState != PlayerState.Rage && !isAttacking)
         {
             if (context.started && (movementInput.x != 0 || movementInput.y != 0) && playerAttributes.Stamina > 0)
             {
@@ -111,6 +112,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
 
     public void OnRolling(InputAction.CallbackContext context)
     {
@@ -317,7 +319,27 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Y", movementInput.y);
         animator.SetBool("IsRunning", playerState == PlayerState.Running);
     }
+    public bool ChangeWeapon()
+    {
+        if (playerState == PlayerState.Idle && movementInput == Vector2.zero)
+        {
+            StartCoroutine(Unequip());
+            return true;
+        }
+        return false;
+    }
+    private IEnumerator Unequip()
+    {
+        playerState = PlayerState.Unequip;
+        animator.SetBool("Unequip", true);
 
+        yield return new WaitForSeconds(0.3f);
+
+        playerState = PlayerState.Idle;
+        animator.SetBool("Unequip", false);
+
+        yield return new WaitForSeconds(0.5f);
+    }
     private void ToggleCrouch()
     {
         if (playerState == PlayerState.Crouching)

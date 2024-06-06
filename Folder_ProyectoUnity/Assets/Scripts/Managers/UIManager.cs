@@ -1,15 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+
 public class UIManager : MonoBehaviour
 {
     [Header("UI_Vida y Stamina")]
-    public Slider staminaBar;
-    public GameObject slider;
+    public Image staminaBarImage;
+    public Image lifeBarImage;
+    public Image rageBarImage;
     public PlayerController playerController;
     public PlayerActions playerAction;
-    public Slider lifeBar;
-    public Slider RageBar;
 
     [Header("UI_Dialogos NPC y enemigos")]
     public Dialogue dialogue;
@@ -31,21 +31,11 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (playerController != null )
+        if (playerController != null)
         {
-            staminaBar.value = playerController.playerAttributes.Stamina;
-            lifeBar.value = playerController.playerAttributes.Life;
-            RageBar.value = playerController.playerAction.GetEnemyKillCount();
-
-            if (playerController.playerAction.inRageMode)
-            {
-                slider.SetActive(true);
-                RageBar.value = playerController.playerAction.GetRemainingRageDuration();
-            }
-            else
-            {
-                slider.SetActive(false);
-            }
+            UpdateStaminaBar();
+            UpdateLifeBar();
+            UpdateRageBar();
         }
 
         if (dialoguePanel.activeSelf && Input.GetKeyDown(KeyCode.Space))
@@ -54,6 +44,34 @@ public class UIManager : MonoBehaviour
         }
 
     }
+
+    private void UpdateStaminaBar()
+    {
+        if (staminaBarImage != null && playerController != null)
+        {
+            float fillAmount = playerController.playerAttributes.Stamina / 100f;
+            staminaBarImage.fillAmount = fillAmount;
+        }
+    }
+
+    private void UpdateLifeBar()
+    {
+        if (lifeBarImage != null && playerController != null)
+        {
+            float fillAmount = playerController.playerAttributes.Life / 100f;
+            lifeBarImage.fillAmount = fillAmount;
+        }
+    }
+
+    private void UpdateRageBar()
+    {
+        if (rageBarImage != null && playerAction != null)
+        {
+            float fillAmount = playerAction.GetEnemyKillCount() / 10f;
+            rageBarImage.fillAmount = fillAmount;
+        }
+    }
+
     public void StartDialogue()
     {
         dialoguePanel.SetActive(true);
