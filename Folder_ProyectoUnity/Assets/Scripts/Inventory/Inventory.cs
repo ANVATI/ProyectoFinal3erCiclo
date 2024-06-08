@@ -6,7 +6,7 @@ public class Inventory : MonoBehaviour
     public GameObject[] armas;
     public Image[] imagenesArmas;
     private bool[] armasDesbloqueadas;
-    private int indiceActual = 0; // Empezar con el primer arma equipada
+    private int indiceActual = 0;
     private PlayerController _player;
 
     private void Awake()
@@ -17,7 +17,6 @@ public class Inventory : MonoBehaviour
     void Start()
     {
         armasDesbloqueadas = new bool[armas.Length];
-        // La primera arma comienza desbloqueada
         armasDesbloqueadas[0] = true;
         ActualizarInterfaz();
     }
@@ -26,7 +25,6 @@ public class Inventory : MonoBehaviour
     {
         if (indiceArma >= 0 && indiceArma < armas.Length)
         {
-            // Desbloquear el arma en el inventario
             armasDesbloqueadas[indiceArma] = true;
             ActualizarInterfaz();
         }
