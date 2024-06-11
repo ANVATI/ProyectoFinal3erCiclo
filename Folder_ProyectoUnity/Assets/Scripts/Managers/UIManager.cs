@@ -7,7 +7,8 @@ public class UIManager : MonoBehaviour
     [Header("UI_Vida y Stamina")]
     public Image staminaBarImage;
     public Image lifeBarImage;
-    public Image rageBarImage;
+    public Slider RageBar;
+    public GameObject slider;
     public PlayerController playerController;
     public PlayerActions playerAction;
 
@@ -36,6 +37,7 @@ public class UIManager : MonoBehaviour
             UpdateStaminaBar();
             UpdateLifeBar();
             UpdateRageBar();
+            
         }
 
         if (dialoguePanel.activeSelf && Input.GetKeyDown(KeyCode.Space))
@@ -65,10 +67,16 @@ public class UIManager : MonoBehaviour
 
     private void UpdateRageBar()
     {
-        if (rageBarImage != null && playerAction != null)
+        RageBar.value = playerController.playerAction.GetEnemyKillCount();
+
+        if (playerController.playerAction.inRageMode)
         {
-            float fillAmount = playerAction.GetEnemyKillCount() / 10f;
-            rageBarImage.fillAmount = fillAmount;
+            slider.SetActive(true);
+            RageBar.value = playerController.playerAction.GetRemainingRageDuration();
+        }
+        else
+        {
+            slider.SetActive(false);
         }
     }
 

@@ -157,7 +157,7 @@ public class PlayerController : MonoBehaviour
                 _audioSource.PlayOneShot(_actionSounds.clipSounds[0]);
                 playerAction.TriggerRage();
                 StartCoroutine(Rage());
-                playerAttributes.Stamina = 100f;
+                //playerAttributes.Stamina = 100f;
             }
         }
     }
@@ -250,12 +250,23 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (playerState == PlayerState.Attacking || playerState == PlayerState.Rage
+        if (playerState == PlayerState.Rage
             || playerState == PlayerState.Taunting || playerState == PlayerState.Rolling
-            || playerState == PlayerState.CrouchingAttack || isRolling)
+            || isRolling)
         {
             return;
         }
+        else if(playerState == PlayerState.Attacking || playerState == PlayerState.CrouchingAttack)
+        {
+            rb.constraints |= RigidbodyConstraints.FreezePositionZ;
+            rb.constraints |= RigidbodyConstraints.FreezePositionX;
+        }
+        else
+        {
+            rb.constraints &= ~RigidbodyConstraints.FreezePositionX;
+            rb.constraints &= ~RigidbodyConstraints.FreezePositionZ;
+        }
+
         Vector3 forward = cameraTransform.forward;
         Vector3 right = cameraTransform.right;
 
@@ -269,16 +280,15 @@ public class PlayerController : MonoBehaviour
 
         if (moveDirection != Vector3.zero)
         {
-
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), 0.18f);
 
             if (playerState == PlayerState.Running)
             {
                 if (playerAttributes.Stamina > 0 && !playerAction.inRageMode)
                 {
-                    DecreaseStamina(0.1f);
+                    DecreaseStamina(0.065f);
                     playerAttributes.currentSpeed += playerAttributes.acceleration * Time.fixedDeltaTime;
-                    playerAttributes.currentSpeed = Mathf.Min(playerAttributes.currentSpeed, playerAttributes.maxSpeed);
+                    playerAttributes.currentSpeed = Mathf.Clamp(playerAttributes.currentSpeed, 0f, playerAttributes.maxSpeed);
                 }
                 else if (playerAction.inRageMode)
                 {
@@ -301,7 +311,9 @@ public class PlayerController : MonoBehaviour
                 IncreaseStamina(Time.deltaTime * 2f);
             }
 
-            rb.MovePosition(transform.position + moveDirection * playerAttributes.currentSpeed * Time.fixedDeltaTime);
+            Vector3 velocity = moveDirection * playerAttributes.currentSpeed;
+            velocity.y = rb.velocity.y;
+            rb.velocity = velocity;
         }
         else
         {
@@ -311,8 +323,13 @@ public class PlayerController : MonoBehaviour
             {
                 playerState = PlayerState.Idle;
             }
+
+            rb.velocity = new Vector3(0, rb.velocity.y, 0);
         }
     }
+
+
+
     private void UpdateAnimation()
     {
         animator.SetFloat("X", movementInput.x);
@@ -368,4 +385,21 @@ public class PlayerController : MonoBehaviour
     {
         playerAttributes.Stamina = Mathf.Max(playerAttributes.Stamina - amount, 0);
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag =="Enemy")
+        {
+            rb.constraints |= RigidbodyConstraints.FreezePositionY;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            rb.constraints &= ~RigidbodyConstraints.FreezePositionY;
+        }
+    }
+
 }

@@ -13,13 +13,12 @@ MonoBehaviour:
   m_Name: PlayerAttributes
   m_EditorClassIdentifier: 
   Life: 200
-  Attack: 10
   walkSpeed: 5
-  runSpeed: 9
+  runSpeed: 10
   crouchSpeed: 3
-  rollForce: 10
-  Stamina: 57.460796
+  rollForce: 7.5
+  Stamina: 100
   RageDuration: 10
-  currentSpeed: 5
+  currentSpeed: 5.250001
   acceleration: 2.5
-  maxSpeed: 9
+  maxSpeed: 10

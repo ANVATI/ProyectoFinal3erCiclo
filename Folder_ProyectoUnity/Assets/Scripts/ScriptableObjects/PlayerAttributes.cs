@@ -4,7 +4,6 @@ using UnityEngine;
 public class PlayerAttributes : ScriptableObject
 {
     public float Life = 200f;
-    public float Attack = 10;
     public float walkSpeed = 5.0f;
     public float runSpeed = 9.8f;
     public float crouchSpeed = 3.0f;
@@ -20,7 +19,6 @@ public class PlayerAttributes : ScriptableObject
         runSpeed *= 1.2f;
         crouchSpeed *= 1.35f;
         rollForce *= 1.35f;
-        Attack *= 2;
     }
 
     public void ResetAttributes()
@@ -28,7 +26,6 @@ public class PlayerAttributes : ScriptableObject
         walkSpeed /= 1.5f;
         crouchSpeed /= 1.35f;
         rollForce /= 1.35f;
-        Attack /= 2;
     }
 
 }

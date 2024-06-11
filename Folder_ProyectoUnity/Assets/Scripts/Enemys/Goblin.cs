@@ -25,7 +25,7 @@ public class Goblin : HerenciaEnemy
 
     private void Start()
     {
-        maxHP = 5;
+        maxHP = 1;
         currentHP = maxHP;
         pushingForce = 10;
         enemyRenderer = GetComponentInChildren<Renderer>();
